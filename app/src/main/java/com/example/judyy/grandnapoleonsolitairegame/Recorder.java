@@ -58,6 +58,11 @@ public class Recorder {
         if (!mRecord.empty()){
             OneStep undoStep = mRecord.pop();
             undoStep.undo();
+
+            //check if empty now, if empty, reset direction
+            if (mRecord.empty()){
+                DragDrop.setDirection(0);
+            }
         }
     }
 

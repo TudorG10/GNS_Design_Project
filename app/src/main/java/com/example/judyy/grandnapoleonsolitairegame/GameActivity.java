@@ -234,10 +234,10 @@ public class GameActivity extends AppCompatActivity {
         } else if (type.equals("dummy")) {
             // when predetermined selected - by place card into stack associated
             // TODO - Find at least a layout of solving game - Below is just a dummy layout
-            cards[0] = new Card(1, 8);
-            cards[1] = new Card(2, 8);
-            cards[2] = new Card(3, 8);
-            cards[3] = new Card(4, 8);
+            cards[0] = new Card(1, 2);
+            cards[1] = new Card(2, 2);
+            cards[2] = new Card(3, 2);
+            cards[3] = new Card(4, 2);
             cards[4] = new Card(1, 7);
             cards[5] = new Card(2, 7);
             cards[6] = new Card(3, 7);
@@ -270,18 +270,18 @@ public class GameActivity extends AppCompatActivity {
             cards[33] = new Card(2, 12);
             cards[34] = new Card(3, 12);
             cards[35] = new Card(4, 12);
-            cards[36] = new Card(1, 13);
-            cards[37] = new Card(2, 13);
-            cards[38] = new Card(3, 13);
-            cards[39] = new Card(4, 13);
-            cards[40] = new Card(1, 3);
-            cards[41] = new Card(2, 3);
-            cards[42] = new Card(3, 3);
-            cards[43] = new Card(4, 3);
-            cards[44] = new Card(1, 2);
-            cards[45] = new Card(2, 2);
-            cards[46] = new Card(3, 2);
-            cards[47] = new Card(4, 2);
+            cards[36] = new Card(1, 3);
+            cards[37] = new Card(2, 3);
+            cards[38] = new Card(3, 3);
+            cards[39] = new Card(4, 3);
+            cards[40] = new Card(1, 13);
+            cards[41] = new Card(2, 13);
+            cards[42] = new Card(3, 13);
+            cards[43] = new Card(4, 13);
+            cards[44] = new Card(1, 8);
+            cards[45] = new Card(2, 8);
+            cards[46] = new Card(3, 8);
+            cards[47] = new Card(4, 8);
             cards[48] = new Card(1, 9);
             cards[49] = new Card(2, 9);
             cards[50] = new Card(3, 9);

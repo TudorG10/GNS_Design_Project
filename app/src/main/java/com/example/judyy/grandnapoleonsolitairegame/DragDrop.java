@@ -29,8 +29,14 @@ public class DragDrop {
     private static float dx, dy, x, y, initialX, initialY;
     private static float stackHeight;
     private static float stackWidth;
-    protected static int direction = 0;
 
+
+
+    protected static int direction = 0; // 0 means direction is not set, 1 is up, -1 is down
+
+    public static void setDirection(int direction) {
+        DragDrop.direction = direction;
+    }
     // Input from GameActivity
     private static Card[] cards;
     private static Stack[] stacks;
