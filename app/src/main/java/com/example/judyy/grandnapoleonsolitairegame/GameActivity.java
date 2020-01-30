@@ -3,6 +3,7 @@ package com.example.judyy.grandnapoleonsolitairegame;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -81,7 +82,27 @@ public class GameActivity extends AppCompatActivity {
         backBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                onBackPressed();
+                //Pop-up to confirm quitting game appears
+                AlertDialog.Builder quitPopUp = new AlertDialog.Builder(context);
+                quitPopUp.setCancelable(true);
+                quitPopUp.setTitle("Quit Game");
+                quitPopUp.setMessage("Are you sure you want to quit the current game?");
+                quitPopUp.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(android.content.DialogInterface dialog, int which) {
+                        onBackPressed();
+                    }
+                });
+                quitPopUp.setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(android.content.DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog dialog = quitPopUp.create();
+                dialog.show();
+
             }
         });
 
@@ -233,10 +254,10 @@ public class GameActivity extends AppCompatActivity {
             cards[17] = new Card(2, 4);
             cards[18] = new Card(3, 4);
             cards[19] = new Card(4, 4);
-            cards[20] = new Card(1, 9);
-            cards[21] = new Card(2, 9);
-            cards[22] = new Card(3, 9);
-            cards[23] = new Card(4, 9);
+            cards[20] = new Card(1, 1);
+            cards[21] = new Card(2, 1);
+            cards[22] = new Card(3, 1);
+            cards[23] = new Card(4, 1);
             cards[24] = new Card(1, 10);
             cards[25] = new Card(2, 10);
             cards[26] = new Card(3, 10);
@@ -261,10 +282,10 @@ public class GameActivity extends AppCompatActivity {
             cards[45] = new Card(2, 2);
             cards[46] = new Card(3, 2);
             cards[47] = new Card(4, 2);
-            cards[48] = new Card(1, 1);
-            cards[49] = new Card(2, 1);
-            cards[50] = new Card(3, 1);
-            cards[51] = new Card(4, 1);
+            cards[48] = new Card(1, 9);
+            cards[49] = new Card(2, 9);
+            cards[50] = new Card(3, 9);
+            cards[51] = new Card(4, 9);
         }
 
         stacks[0].setImageView((ImageView) findViewById(R.id.stack0));
