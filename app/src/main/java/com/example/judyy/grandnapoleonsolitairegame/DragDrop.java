@@ -337,7 +337,7 @@ public class DragDrop {
      * @param stackID    The stack that the card belonged to before the move.
      * @return
      */
-    private static boolean canStack(int whichStack, int stackID) {
+    public static boolean canStack(int whichStack, int stackID) {
 //        Log.d("", "" + whichStack);
         // If same stack, return false
         if (whichStack == stackID) {
@@ -388,7 +388,7 @@ public class DragDrop {
             }
             return true;
 
-            // Base stack can alaways stack, just need to check if valid stacking
+            // Base stack can always stack, just need to check if valid stacking
         } else if (whichStack < 24) {
             return true;
 
@@ -501,8 +501,21 @@ public class DragDrop {
         }
         return false;
     }
+    public static boolean compareCardsHint(Stack s1, Card c2) {
+        Card c1 = s1.getLastCard();
+        if(c1.getCurrentStackID() > 19 && c1.getCurrentStackID() < 24 && s1.getCurrentCards().size() == 1) {
+            if (direction != 0) {
+                return (c1.getSuit() == c2.getSuit()) && ((c2.getNumber() - c1.getNumber()) == direction);
+            }
+        }
+        if (c1.getSuit() == c2.getSuit()) {
 
-
+            if ((Math.abs(c1.getNumber() - c2.getNumber()) == 1) || (Math.abs(c1.getNumber() - c2.getNumber()) == 12)) {
+                return true;
+            }
+        }
+        return false;
+    }
     public boolean myDoubleTap(Card c){
         if (c.getCanMove()) {
             c.getImageView().bringToFront();

@@ -3,6 +3,8 @@ package com.example.judyy.grandnapoleonsolitairegame;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.design.widget.Snackbar;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 
@@ -37,6 +40,8 @@ public class GameActivity extends AppCompatActivity {
     public static Chronometer edtTime, timer;
     public static Boolean done = false;
     Snackbar mHintSnackbar;
+    //temp variable for hint
+    private boolean toggle = false;
 
 
 
@@ -61,6 +66,7 @@ public class GameActivity extends AppCompatActivity {
         //Display card to table
         displayCards(type, cards, stacks);
 
+        //zoom button
         final GameLayout gameLayout = findViewById(R.id.zoom_linear_layout);
         final ImageView zoomToggle = findViewById(R.id.zoom_toggle);
         zoomToggle.setImageResource(R.drawable.zoom_btn);
@@ -76,7 +82,7 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         });
-
+        //quit game button
         final ImageView backBtn = findViewById(R.id.back_btn);
         backBtn.setImageResource(R.drawable.back_btn);
         backBtn.setOnClickListener(new View.OnClickListener(){
@@ -106,6 +112,7 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+        //undo button
         final ImageView undoBtn = findViewById(R.id.undo_btn);
         undoBtn.setImageResource(R.drawable.undo_btn);
         undoBtn.setOnClickListener(new View.OnClickListener(){
@@ -115,6 +122,50 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
+        //TODO new hint functionality
+        final ImageView hintBtn = findViewById(R.id.hint_btn);
+        hintBtn.setImageResource(R.drawable.hint_btn);
+        hintBtn.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                if(!toggle) {
+                    toggle = true;
+                    for (Card aCard : cards) {
+                        //means that card can be moved
+                        Card currCard = aCard;
+                        //skip checking the cards that are on the solution stacks
+                        if(currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24) continue;
+
+                        if (currCard.getCanMove()) {
+                            //now need to find where
+                            for (Stack aStack : stacks) {
+                                Card topCard = aStack.getFirstCard();
+                                if (topCard == null) continue;
+                                //this if currently doesn't check for the direction of the stack
+                                //TODO currently just saves which cards can be moved, to improve:
+                                // create a move pair and save every possible move instead of just which card can move, in case a card can have multiple moves,
+                                // will need to remove break for that
+                                boolean validStack = DragDrop.canStack(aStack.getStackID(), currCard.getCurrentStackID());   // Check if the stack can be stacked.
+                                if (validStack && aStack.getStackID() < 44) { //lets just ignore cellar for now
+                                    if (DragDrop.compareCardsHint(aStack, currCard)) { //lets just ignore cellar for now
+                                        currCard.getImageView().setColorFilter(Color.argb(123, 0, 255, 122));
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else{
+                    toggle = false;
+                    for (Card aCard : cards) {
+                        ImageView cardImg = aCard.getImageView();
+                        cardImg.clearColorFilter();
+                    }
+                }
+            }
+        });
+
+/*
         final ImageView hintBtn = findViewById(R.id.hint_btn);
         hintBtn.setImageResource(R.drawable.hint_btn);
         solver.setDirection();
@@ -128,7 +179,6 @@ public class GameActivity extends AppCompatActivity {
                 }
                 Hint mHint = solver.requestHint();
                 if (mHint == null){
-                    // TODO Display dialog
                     Log.d("Hint", "No Hint");
                     mHintSnackbar.show();
                 } else {
@@ -164,9 +214,9 @@ public class GameActivity extends AppCompatActivity {
 //                    });
                 }
             }
-        });
-    }
+        });*/
 
+    }
 
     /**
      * Display card on the game page.
