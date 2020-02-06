@@ -40,8 +40,9 @@ public class GameActivity extends AppCompatActivity {
     public static Chronometer edtTime, timer;
     public static Boolean done = false;
     Snackbar mHintSnackbar;
+
     //temp variable for hint
-    private boolean toggle = false;
+    public static ArrayList<Card> hintCardsList = new ArrayList<Card>();
 
 
 
@@ -127,39 +128,30 @@ public class GameActivity extends AppCompatActivity {
         hintBtn.setImageResource(R.drawable.hint_btn);
         hintBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
-                if(!toggle) {
-                    toggle = true;
-                    for (Card aCard : cards) {
-                        //means that card can be moved
-                        Card currCard = aCard;
-                        //skip checking the cards that are on the solution stacks
-                        if(currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24) continue;
+                for (Card aCard : cards) {
+                    //means that card can be moved
+                    Card currCard = aCard;
+                    //skip checking the cards that are on the solution stacks
+                    if(currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24) continue;
 
-                        if (currCard.getCanMove()) {
-                            //now need to find where
-                            for (Stack aStack : stacks) {
-                                Card topCard = aStack.getFirstCard();
-                                if (topCard == null) continue;
-                                //this if currently doesn't check for the direction of the stack
-                                //TODO currently just saves which cards can be moved, to improve:
-                                // create a move pair and save every possible move instead of just which card can move, in case a card can have multiple moves,
-                                // will need to remove break for that
-                                boolean validStack = DragDrop.canStack(aStack.getStackID(), currCard.getCurrentStackID());   // Check if the stack can be stacked.
-                                if (validStack && aStack.getStackID() < 44) { //lets just ignore cellar for now
-                                    if (DragDrop.compareCardsHint(aStack, currCard)) { //lets just ignore cellar for now
-                                        currCard.getImageView().setColorFilter(Color.argb(123, 0, 255, 122));
-                                        break;
-                                    }
+                    if (currCard.getCanMove()) {
+                        //now need to find where
+                        for (Stack aStack : stacks) {
+                            Card topCard = aStack.getFirstCard();
+                            if (topCard == null) continue;
+                            //this if currently doesn't check for the direction of the stack
+                            //TODO currently just colours which cards can be moved.
+                            // To improve: create a move pair and save every possible move instead of just which card can move, in case a card can have multiple moves,
+                            // will need to remove break for that
+                            boolean validStack = DragDrop.canStack(aStack.getStackID(), currCard.getCurrentStackID());   // Check if the stack can be stacked.
+                            if (validStack && aStack.getStackID() < 44) { //lets just ignore cellar for now
+                                if (DragDrop.compareCardsHint(aStack, currCard)) { //lets just ignore cellar for now
+                                    hintCardsList.add(currCard);
+                                    currCard.getImageView().setColorFilter(Color.argb(123, 0, 255, 122));
+                                    break;
                                 }
                             }
                         }
-                    }
-                }
-                else{
-                    toggle = false;
-                    for (Card aCard : cards) {
-                        ImageView cardImg = aCard.getImageView();
-                        cardImg.clearColorFilter();
                     }
                 }
             }

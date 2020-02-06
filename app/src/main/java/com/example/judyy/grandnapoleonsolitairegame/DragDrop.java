@@ -284,7 +284,15 @@ public class DragDrop {
         cardImage.setY(yToSet);
         // Overwrite the card's position to the new position
         card.setXYPositions(xToSet, yToSet);
+        //reset highlighted cards
+        //TODO in case i forget i added this here
+        for (Card aCard : GameActivity.hintCardsList) {
+            ImageView cardImg = aCard.getImageView();
+            cardImg.clearColorFilter();
+        }
+        GameActivity.hintCardsList.clear();
     }
+
 
     /**
      * Method called when a touch event has been detected. Switch statement to
