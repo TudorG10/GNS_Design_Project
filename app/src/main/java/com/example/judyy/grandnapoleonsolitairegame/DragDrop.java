@@ -13,7 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.util.*;
 
 /**
  * GNS Android Game Application
@@ -263,7 +263,7 @@ public class DragDrop {
         }
     }
 
-    public void moveCard(Stack currentStack, Card card, Stack stackToDrop, float xToSet, float yToSet) {
+    public static void moveCard(Stack currentStack, Card card, Stack stackToDrop, float xToSet, float yToSet) {
         ImageView cardImage = card.getImageView();
         cardImage.bringToFront();
         // Remove the card from its stack & and release the following card
@@ -286,11 +286,20 @@ public class DragDrop {
         card.setXYPositions(xToSet, yToSet);
         //reset highlighted cards
         //TODO in case i forget i added this here
-        for (Card aCard : GameActivity.hintCardsList) {
-            ImageView cardImg = aCard.getImageView();
-            cardImg.clearColorFilter();
+        clearCardColours(cards);
+    }
+
+    /**
+     * Method to clear colour on all cards and the cellar
+     *
+     * @param cardSet list of cards to reset their colour
+     */
+    public static void clearCardColours(Card[] cardSet) {
+        for (Card aCard : cardSet) {
+            aCard.getImageView().clearColorFilter();
         }
-        GameActivity.hintCardsList.clear();
+        //clear cellar as well
+        stacks[48].getImageView().clearColorFilter();
     }
 
 
@@ -509,6 +518,14 @@ public class DragDrop {
         }
         return false;
     }
+
+    /**
+     * Determine whether the two cards can be stacked together. Same suit + ascending or descending order.
+     * this version does not change anything, it is only to observe if it is stackable
+     * @param s1 cell to stack on
+     * @param c2 Card to move
+     * @return True if can be stacked. False otherwise
+     */
     public static boolean compareCardsHint(Stack s1, Card c2) {
         Card c1 = s1.getLastCard();
         if(c1.getCurrentStackID() > 19 && c1.getCurrentStackID() < 24 && s1.getCurrentCards().size() == 1) {

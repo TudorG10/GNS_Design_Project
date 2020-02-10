@@ -20,7 +20,9 @@ import android.widget.TextView;
 import android.support.design.widget.Snackbar;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import android.util.*;
 
 
 
@@ -43,6 +45,11 @@ public class GameActivity extends AppCompatActivity {
 
     //temp variable for hint
     public static ArrayList<Card> hintCardsList = new ArrayList<Card>();
+    //predefine my colours
+    private static int GREEN = Color.argb(123,0,255,0);
+    private static int RED = Color.argb(123,255,0,0);
+    private static int CELLAR_RED = Color.argb(255,255,0,0);
+
 
 
 
@@ -127,32 +134,40 @@ public class GameActivity extends AppCompatActivity {
         final ImageView hintBtn = findViewById(R.id.hint_btn);
         hintBtn.setImageResource(R.drawable.hint_btn);
         hintBtn.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
-                for (Card aCard : cards) {
-                    //means that card can be moved
-                    Card currCard = aCard;
-                    //skip checking the cards that are on the solution stacks
-                    if(currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24) continue;
+            public void onClick(View v) {
+                DragDrop.clearCardColours(cards);
+                //call method to acquire list of moves
+                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(gameLayout,cards,stacks);
+                //Monte Carlo Magic begins here
+//                Stack[] newGameState = new Stack[stacks.length];
+//                Card[] newCardsState = new Card[cards.length];
+//
+//                System.arraycopy(stacks,0,newGameState, 0, stacks.length);
+//                System.arraycopy(cards,0,newCardsState, 0, cards.length);
+//
+//                for(Pair<Card, Stack> aMove : availableMoves){
+//                    DragDrop.moveCard(newGameState[aMove.first.getCurrentStackID()],aMove.first,newGameState[aMove.second.getStackID()],aMove.second.getLastCard().getXPosition(), aMove.second.getLastCard().getYPosition());
+//                    ArrayList<Pair<Card, Stack>> newAvailableMoves = getMoves(gameLayout,newCardsState,newGameState);
+//
+//                }
 
-                    if (currCard.getCanMove()) {
-                        //now need to find where
-                        for (Stack aStack : stacks) {
-                            Card topCard = aStack.getFirstCard();
-                            if (topCard == null) continue;
-                            //this if currently doesn't check for the direction of the stack
-                            //TODO currently just colours which cards can be moved.
-                            // To improve: create a move pair and save every possible move instead of just which card can move, in case a card can have multiple moves,
-                            // will need to remove break for that
-                            boolean validStack = DragDrop.canStack(aStack.getStackID(), currCard.getCurrentStackID());   // Check if the stack can be stacked.
-                            if (validStack && aStack.getStackID() < 44) { //lets just ignore cellar for now
-                                if (DragDrop.compareCardsHint(aStack, currCard)) { //lets just ignore cellar for now
-                                    hintCardsList.add(currCard);
-                                    currCard.getImageView().setColorFilter(Color.argb(123, 0, 255, 122));
-                                    break;
-                                }
-                            }
-                        }
+                //pick a move to give hint
+                mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
+                if(availableMoves == null){
+                    mHintSnackbar.show();
+                }
+                else{
+                    int index = new Random().nextInt(availableMoves.size());
+                    Pair<Card, Stack> aMove = availableMoves.get(index);
+                    aMove.first.getImageView().setColorFilter(GREEN);
+                    //if colouring cellar, crashes, since no card in it
+                    if(aMove.second.getLastCard() == null){//case cellar
+                        aMove.second.getImageView().setColorFilter(CELLAR_RED);
                     }
+                    else{//case normal card
+                        aMove.second.getLastCard().getImageView().setColorFilter(RED);
+                    }
+                    availableMoves.remove(aMove);
                 }
             }
         });
@@ -211,12 +226,77 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * Function to create a list of moves
+     *
+     * @param gameLayout
+     * @return an ArrayList of Pairs (tuples) of cards, first is source, second is destination
+     */
+    private ArrayList<Pair<Card, Stack>> getMoves(GameLayout gameLayout, Card[] cardsToCheck, Stack[] stackToCheck) {
+        //tuple list of cards to represent moves
+        ArrayList<Pair<Card, Stack>> moveList = new ArrayList<Pair<Card, Stack>>();
+
+        for (Card aCard : cardsToCheck) {
+            Card currCard = aCard;
+            //skip checking the cards that are on the solution stacks
+            if (currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24)
+                continue;
+
+            //means that card can be moved
+            if (currCard.getCanMove()) {
+                //now need to find where
+                for (Stack aStack : stackToCheck) {
+                    //last card is top card
+                    Card topCard = aStack.getLastCard();
+                    //ignore empty stacks
+                    if (topCard == null) continue;
+
+                    boolean validStack = DragDrop.canStack(aStack.getStackID(), currCard.getCurrentStackID());   // Check if the stack can be stacked.
+                    if (validStack && aStack.getStackID() < 44 && DragDrop.compareCardsHint(aStack, currCard)) { //lets just ignore cellar for now
+                        Pair<Card, Stack> move = new Pair<Card, Stack>(currCard, aStack);
+                        moveList.add(move);
+                    }
+                }
+            }
+        }
+//        return moveList;
+        //found a move
+
+        if (moveList.size() != 0){
+            return moveList;
+        }
+        //no moves found, check cellar
+        else{
+            //there's room in cellar
+            Stack cellar = stackToCheck[48];
+            if(cellar.getLastCard() == null){
+                //same logic as before but this time we'll check for cards that are 'by themselves', i.e. not stacked
+                for (Card aCard : cardsToCheck) {
+                    Card currCard = aCard;
+                    //skip checking the cards that are on the solution stacks
+                    if (currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24)
+                        continue;
+                    //means that card can be moved and only 1 card on a stack
+                    if (currCard.getCanMove() && stackToCheck[currCard.getCurrentStackID()].getCurrentCards().size() == 1) {
+                        Pair<Card, Stack> move = new Pair<Card, Stack>(currCard,cellar);
+                        moveList.add(move);
+                    }
+                }
+                return moveList;
+            }
+            else{
+                return null;
+            }
+        }
+
+    }
+
+    /**
      * Display card on the game page.
      *
      * @param type  type of game that user selected 1 - random game or 2 - predetermined game
-     * @param stack stack position on the page
+     * @param stacks stack position on the page
      * @return None
-     * @params card card that will be added to stack
+     * @param cards card that will be added to stack
      */
     public void displayCards(String type, Card[] cards, Stack[] stacks) {
         // Create 53 stacks

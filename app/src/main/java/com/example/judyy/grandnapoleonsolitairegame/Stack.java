@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * @author Andrew Lin
  * @version 1.0 03/25/2017
  */
-public class Stack {
+public class Stack implements Cloneable{
 
     private ImageView view;
     private ArrayList<Card> currentCards = new ArrayList<Card>();    // First index of the list = bottom card, Last index of the list = top card
@@ -33,6 +33,25 @@ public class Stack {
         this.stackID = id;
     }
 
+    /**
+     * Method used to copy stack objects
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    //TODO probly need this for monte carlo
+    public Object clone() throws
+            CloneNotSupportedException
+    {
+        // Assign the shallow copy to new reference variable t
+        Stack t = (Stack)super.clone();
+
+//        t.c = new Test();
+
+        // Create a new object for the field c
+        // and assign it to shallow copy obtained,
+        // to make it a deep copy
+        return t;
+    }
     /**
      * Add card to stack.
      *
@@ -89,7 +108,7 @@ public class Stack {
 
     /**
      * Get the first Cards from the stack.
-     *
+     * First card is the card underneath
      * @return firstCard First card of the stack
      * @params args not used
      */
@@ -104,7 +123,7 @@ public class Stack {
 
     /**
      * Get the last Cards from the stack.
-     *
+     * Last card is the top card
      * @return LastCard Last card of the stack
      * @params args not used
      */
@@ -143,7 +162,6 @@ public class Stack {
         }
         return list;
     }
-
     public ArrayList<Card> getCurrentCards() {
         return this.currentCards;
     }
