@@ -13,7 +13,7 @@ import android.widget.ImageView;
  * @author Andrew Lin
  * @version 1.0 03/25/2017
  */
-public class Card {
+public class Card implements Cloneable{
     private int suit;       // 1 for Diamonds, 2 for Clubs, 3 for Hearts, 4 for Spades
     private int number;     // 1 for Ace, 2 for Two, ... , 11 for Jack, 12 for Queen, 13 for King
     private int[] drawables;// values for the image of the card
@@ -60,6 +60,34 @@ public class Card {
         this.number = number;
     }
 
+    /**
+     * Method used to copy Card objects
+     * @return
+     * @throws CloneNotSupportedException
+     */
+    //TODO probly need this for monte carlo
+    // references stack as well, so to clone card need to clone stack, cyclical referencing, pls kill me matt
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        // Assign the shallow copy to new reference variable t
+//        private int suit;       // 1 for Diamonds, 2 for Clubs, 3 for Hearts, 4 for Spades
+//        private int number;     // 1 for Ace, 2 for Two, ... , 11 for Jack, 12 for Queen, 13 for King
+//        private int[] drawables;// values for the image of the card
+//        private ImageView view;
+//        private int currentStackID = 0;
+//        private boolean canMove;
+//        public int style = 0;
+//        private float xPosition;
+//        private float yPosition;
+        Card t = new Card(this.suit,this.number);
+
+//        t.c = new Test();
+
+        // Create a new object for the field c
+        // and assign it to shallow copy obtained,
+        // to make it a deep copy
+        return t;
+    }
     /**
      * Get suit number of card.
      *
