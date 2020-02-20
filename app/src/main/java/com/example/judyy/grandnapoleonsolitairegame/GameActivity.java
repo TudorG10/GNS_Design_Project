@@ -153,7 +153,7 @@ public class GameActivity extends AppCompatActivity {
 
                 //pick a move to give hint
                 mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
-                if(availableMoves == null){
+                if(availableMoves.size() == 0){
                     mHintSnackbar.show();
                 }
                 else{
@@ -284,7 +284,8 @@ public class GameActivity extends AppCompatActivity {
                 return moveList;
             }
             else{
-                return null;
+                //this should be empty
+                return moveList;
             }
         }
 
