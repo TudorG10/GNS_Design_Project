@@ -10,10 +10,8 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.util.*;
 
 /**
  * GNS Android Game Application
@@ -257,7 +255,7 @@ public class DragDrop {
             cardImage.setY(yToSet);
         }
 
-        if (winConditionCheck()){
+        if (isWin(this.stacks)){
             Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
             mWinSnackbar.show();
         }
@@ -489,7 +487,7 @@ public class DragDrop {
      *
      * @return True if base are filled. False otherwise.
      */
-    private static boolean winConditionCheck() {
+    public static boolean isWin(Stack[] stacks) {
         for (int i = 20; i < 24; i++) {
             if (stacks[i].getCurrentCards().size() != 13) {
                 return false;

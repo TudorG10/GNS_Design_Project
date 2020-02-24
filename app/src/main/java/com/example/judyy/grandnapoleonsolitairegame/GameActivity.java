@@ -29,8 +29,8 @@ import android.util.*;
 public class GameActivity extends AppCompatActivity {
 
     private int[] location = new int[2];
-    public Stack[] stacks;
-    public Card[] cards;
+    public Stack[] stacks = new Stack[53];
+    public Card[] cards = new Card[52];
     Context context = this;
     Recorder recorder;
     HintSolver solver;
@@ -49,6 +49,7 @@ public class GameActivity extends AppCompatActivity {
     private static int GREEN = Color.argb(123,0,255,0);
     private static int RED = Color.argb(123,255,0,0);
     private static int CELLAR_RED = Color.argb(255,255,0,0);
+    private static int numMCTrialsPerBoard = 1000;
 
 
 
@@ -73,9 +74,21 @@ public class GameActivity extends AppCompatActivity {
 
         //Display card to table
 
-        this.stacks = new Stack[53];
-        this.cards = new Card[52];
-        generateCardSetup(type, cards, stacks);
+        boolean gameIsWinnable = false;
+        while (!gameIsWinnable){
+            generateCardSetup(type, cards, stacks);
+            System.out.println(getMoves(cards, stacks).size());
+            // Monte Carlo simulations
+//            Stack[] s;
+//            Card[] c;
+//            for (int i=0; i<this.numMCTrialsPerBoard && !gameIsWinnable; i++){
+//                s = this.stacks.clone();
+//                c = this.cards.clone();
+//                gameIsWinnable = MonteCarloIsGameWinnable(s, c);
+//            }
+            gameIsWinnable = true; // TODO: remove
+        }
+
         displayCards(cards, stacks);
 
         //zoom button
@@ -141,7 +154,7 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 DragDrop.clearCardColours(cards);
                 //call method to acquire list of moves
-                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(gameLayout,cards,stacks);
+                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
                 //Monte Carlo Magic begins here
 //                Stack[] newGameState = new Stack[stacks.length];
 //                Card[] newCardsState = new Card[cards.length];
@@ -231,32 +244,28 @@ public class GameActivity extends AppCompatActivity {
 
     /**
      * Function to check if a game is playable
-     * @return
+     * @return true if a game is winnable from the current state
      */
-    private boolean MonteCarloIsGameWinnable(Stack[] gameState, Card[] cardState){
-                Stack[] newGameState = new Stack[stacks.length];
-                Card[] newCardsState = new Card[cards.length];
-                GameLayout gl = new GameLayout(null);
-                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(gl, newCardsState, newGameState);
-                System.arraycopy(stacks,0, newGameState, 0, stacks.length);
-                System.arraycopy(cards,0, newCardsState, 0, cards.length);
-
-                for(Pair<Card, Stack> aMove : availableMoves){
-                    //Change this to updateCardOnStack
-                    DragDrop.moveCard(newGameState[aMove.first.getCurrentStackID()],aMove.first,newGameState[aMove.second.getStackID()],aMove.second.getLastCard().getXPosition(), aMove.second.getLastCard().getYPosition());
-                    ArrayList<Pair<Card, Stack>> newAvailableMoves = getMoves(gl, newCardsState,newGameState);
+    private boolean MonteCarloIsGameWinnable(Stack[] gameStacks, Card[] gameCards){
+                ArrayList<Pair<Card, Stack>> availableMoves = null;
+                Random r = new Random();
+                while (true){
+                    availableMoves = getMoves(gameCards, gameStacks);
+                    if (availableMoves.size() == 0 ){
+                        return (DragDrop.isWin(gameStacks));
+                    }
+                    Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
+                    DragDrop.updateCardOnStacks(gameStacks[aMove.first.getCurrentStackID()],
+                                                aMove.first,gameStacks[aMove.second.getStackID()]);
                 }
-
-                return true;
     }
 
     /**
      * Function to create a list of moves
      *
-     * @param gameLayout
      * @return an ArrayList of Pairs (tuples) of cards, first is source, second is destination
      */
-    private ArrayList<Pair<Card, Stack>> getMoves(GameLayout gameLayout, Card[] cardsToCheck, Stack[] stackToCheck) {
+    private ArrayList<Pair<Card, Stack>> getMoves(Card[] cardsToCheck, Stack[] stackToCheck) {
         //tuple list of cards to represent moves
         ArrayList<Pair<Card, Stack>> moveList = new ArrayList<Pair<Card, Stack>>();
 
