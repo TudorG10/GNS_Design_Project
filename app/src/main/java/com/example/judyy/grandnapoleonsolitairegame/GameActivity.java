@@ -29,8 +29,8 @@ import android.util.*;
 public class GameActivity extends AppCompatActivity {
 
     private int[] location = new int[2];
-    Stack[] stacks = new Stack[53];
-    Card[] cards = new Card[52];
+    public Stack[] stacks;
+    public Card[] cards;
     Context context = this;
     Recorder recorder;
     HintSolver solver;
@@ -72,7 +72,11 @@ public class GameActivity extends AppCompatActivity {
         solver = new HintSolver(this);
 
         //Display card to table
-        displayCards(type, cards, stacks);
+
+        this.stacks = new Stack[53];
+        this.cards = new Card[52];
+        generateCardSetup(type, cards, stacks);
+        displayCards(cards, stacks);
 
         //zoom button
         final GameLayout gameLayout = findViewById(R.id.zoom_linear_layout);
@@ -226,6 +230,27 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * Function to check if a game is playable
+     * @return
+     */
+    private boolean MonteCarloIsGameWinnable(Stack[] gameState, Card[] cardState){
+                Stack[] newGameState = new Stack[stacks.length];
+                Card[] newCardsState = new Card[cards.length];
+                GameLayout gl = new GameLayout(null);
+                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(gl, newCardsState, newGameState);
+                System.arraycopy(stacks,0, newGameState, 0, stacks.length);
+                System.arraycopy(cards,0, newCardsState, 0, cards.length);
+
+                for(Pair<Card, Stack> aMove : availableMoves){
+                    //Change this to updateCardOnStack
+                    DragDrop.moveCard(newGameState[aMove.first.getCurrentStackID()],aMove.first,newGameState[aMove.second.getStackID()],aMove.second.getLastCard().getXPosition(), aMove.second.getLastCard().getYPosition());
+                    ArrayList<Pair<Card, Stack>> newAvailableMoves = getMoves(gl, newCardsState,newGameState);
+                }
+
+                return true;
+    }
+
+    /**
      * Function to create a list of moves
      *
      * @param gameLayout
@@ -292,14 +317,11 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * Display card on the game page.
      *
      * @param type  type of game that user selected 1 - random game or 2 - predetermined game
-     * @param stacks stack position on the page
-     * @return None
-     * @param cards card that will be added to stack
      */
-    public void displayCards(String type, Card[] cards, Stack[] stacks) {
+    public void generateCardSetup(String type, Card[] cards, Stack[] stacks){
+
         // Create 53 stacks
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = new Stack(i);
@@ -410,6 +432,17 @@ public class GameActivity extends AppCompatActivity {
             cards[50] = new Card(3, 9);
             cards[51] = new Card(4, 9);
         }
+
+    }
+
+    /**
+     * Display card on the game page.
+     *
+     * @param stacks stack position on the page
+     * @return None
+     * @param cards card that will be added to stack
+     */
+    public void displayCards(Card[] cards, Stack[] stacks) {
 
         stacks[0].setImageView((ImageView) findViewById(R.id.stack0));
         stacks[1].setImageView((ImageView) findViewById(R.id.stack1));

@@ -263,9 +263,8 @@ public class DragDrop {
         }
     }
 
-    public static void moveCard(Stack currentStack, Card card, Stack stackToDrop, float xToSet, float yToSet) {
-        ImageView cardImage = card.getImageView();
-        cardImage.bringToFront();
+    public static void updateCardOnStacks(Stack currentStack, Card card, Stack stackToDrop){
+
         // Remove the card from its stack & and release the following card
         currentStack.removeCardFromStack(card);
         if (currentStack.getCurrentCards().size() != 0) {
@@ -279,6 +278,12 @@ public class DragDrop {
             stackToDrop.getLastCard().setCanMove(false);
         }
         stackToDrop.addCardToStack(card);
+    }
+    public static void moveCard(Stack currentStack, Card card, Stack stackToDrop, float xToSet, float yToSet) {
+        ImageView cardImage = card.getImageView();
+        cardImage.bringToFront();
+
+        updateCardOnStacks(currentStack,card, stackToDrop);
         // Set the card's position
         cardImage.setX(xToSet);
         cardImage.setY(yToSet);
