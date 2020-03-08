@@ -234,4 +234,14 @@ public class Card implements Cloneable{
     public float getYPosition() {return yPosition; }
     public int getStyle() { return this.style; }
     public void setStyle(int style) { this.style = style; }
+    @Override
+    public String toString(){
+        String s = "Card : ";
+        s += " number: " + this.number;
+        s += " suit:  " + this.suit;
+        s += " stack ID: " + this.currentStackID;
+        s += "\n";
+        return s;
+    }
+
 }

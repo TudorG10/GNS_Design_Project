@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.design.widget.Snackbar;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
@@ -49,7 +50,7 @@ public class GameActivity extends AppCompatActivity {
     private static int GREEN = Color.argb(123,0,255,0);
     private static int RED = Color.argb(123,255,0,0);
     private static int CELLAR_RED = Color.argb(255,255,0,0);
-    private static int numMCTrialsPerBoard = 1000;
+    private static int numMCTrialsPerBoard = 3;
 
 
 
@@ -76,19 +77,20 @@ public class GameActivity extends AppCompatActivity {
 
         boolean gameIsWinnable = false;
         while (!gameIsWinnable){
-            generateCardSetup(type, cards, stacks);
-            System.out.println(getMoves(cards, stacks).size());
-            // Monte Carlo simulations
-//            Stack[] s;
-//            Card[] c;
-//            for (int i=0; i<this.numMCTrialsPerBoard && !gameIsWinnable; i++){
-//                s = this.stacks.clone();
-//                c = this.cards.clone();
-//                gameIsWinnable = MonteCarloIsGameWinnable(s, c);
-//            }
-            gameIsWinnable = true; // TODO: remove
-        }
+            generateCardSetup(type, cards);
 
+            //Comment out this for loop, and uncomment "gameIsWinnable=true" to play normally.
+            for (int i=0; i<this.numMCTrialsPerBoard && !gameIsWinnable; i++){
+                Card[] clonedCards = cards.clone();
+                Stack[] clonedStacks = new Stack[53];
+                generateStackSetup(clonedCards, clonedStacks);
+                new DragDrop().main(clonedCards, clonedStacks);
+                gameIsWinnable = MonteCarloIsGameWinnable(clonedStacks, clonedCards);
+            }
+//            gameIsWinnable = true;
+        }
+        generateStackSetup(cards, stacks);
+        new DragDrop().main(cards, stacks);
         displayCards(cards, stacks);
 
         //zoom button
@@ -155,18 +157,6 @@ public class GameActivity extends AppCompatActivity {
                 DragDrop.clearCardColours(cards);
                 //call method to acquire list of moves
                 ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
-                //Monte Carlo Magic begins here
-//                Stack[] newGameState = new Stack[stacks.length];
-//                Card[] newCardsState = new Card[cards.length];
-//
-//                System.arraycopy(stacks,0,newGameState, 0, stacks.length);
-//                System.arraycopy(cards,0,newCardsState, 0, cards.length);
-//
-//                for(Pair<Card, Stack> aMove : availableMoves){
-//                    DragDrop.moveCard(newGameState[aMove.first.getCurrentStackID()],aMove.first,newGameState[aMove.second.getStackID()],aMove.second.getLastCard().getXPosition(), aMove.second.getLastCard().getYPosition());
-//                    ArrayList<Pair<Card, Stack>> newAvailableMoves = getMoves(gameLayout,newCardsState,newGameState);
-//
-//                }
 
                 //pick a move to give hint
                 mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
@@ -243,12 +233,35 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
+     * Encodes the cards into an array of arrays
+     * @param gameCards
+     * @param encodedCards
+     */
+    private void encodeBoardState(Card[] gameCards, int[][] encodedCards){
+        for (int i=0; i<gameCards.length; i++){
+            encodedCards[i][0] = gameCards[i].getSuit();
+            encodedCards[i][1] = gameCards[i].getNumber();
+        }
+    }
+    /**
+     * Decodes the cards into an array of arrays
+     * @param gameCards
+     * @param encodedCards
+     */
+    private void decode(int[][] encodedCards, Card[] gameCards){
+        for (int i=0; i<gameCards.length; i++){
+            gameCards[i] = new Card(encodedCards[i][0], encodedCards[i][1]);
+        }
+    }
+
+    /**
      * Function to check if a game is playable
      * @return true if a game is winnable from the current state
      */
     private boolean MonteCarloIsGameWinnable(Stack[] gameStacks, Card[] gameCards){
                 ArrayList<Pair<Card, Stack>> availableMoves = null;
                 Random r = new Random();
+                int i=0;
                 while (true){
                     availableMoves = getMoves(gameCards, gameStacks);
                     if (availableMoves.size() == 0 ){
@@ -257,6 +270,7 @@ public class GameActivity extends AppCompatActivity {
                     Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
                     DragDrop.updateCardOnStacks(gameStacks[aMove.first.getCurrentStackID()],
                                                 aMove.first,gameStacks[aMove.second.getStackID()]);
+                    i++;
                 }
     }
 
@@ -269,12 +283,11 @@ public class GameActivity extends AppCompatActivity {
         //tuple list of cards to represent moves
         ArrayList<Pair<Card, Stack>> moveList = new ArrayList<Pair<Card, Stack>>();
 
-        for (Card aCard : cardsToCheck) {
-            Card currCard = aCard;
+        for (Card currCard : cardsToCheck) {
             //skip checking the cards that are on the solution stacks
-            if (currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24)
+            if (currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24){
                 continue;
-
+            }
             //means that card can be moved
             if (currCard.getCanMove()) {
                 //now need to find where
@@ -292,8 +305,6 @@ public class GameActivity extends AppCompatActivity {
                 }
             }
         }
-//        return moveList;
-        //found a move
 
         if (moveList.size() != 0){
             return moveList;
@@ -304,8 +315,7 @@ public class GameActivity extends AppCompatActivity {
             Stack cellar = stackToCheck[48];
             if(cellar.getLastCard() == null){
                 //same logic as before but this time we'll check for cards that are 'by themselves', i.e. not stacked
-                for (Card aCard : cardsToCheck) {
-                    Card currCard = aCard;
+                for (Card currCard : cardsToCheck) {
                     //skip checking the cards that are on the solution stacks
                     if (currCard.getCurrentStackID() > 19 && currCard.getCurrentStackID() < 24)
                         continue;
@@ -329,12 +339,8 @@ public class GameActivity extends AppCompatActivity {
      *
      * @param type  type of game that user selected 1 - random game or 2 - predetermined game
      */
-    public void generateCardSetup(String type, Card[] cards, Stack[] stacks){
+    public void generateCardSetup(String type, Card[] cards){
 
-        // Create 53 stacks
-        for (int i = 0; i < stacks.length; i++) {
-            stacks[i] = new Stack(i);
-        }
         if (type.equals("normal")) {
             // Randomly pick a number for base, and fill base with those cards in alternating suit color.
             Random rand = new Random();
@@ -442,6 +448,27 @@ public class GameActivity extends AppCompatActivity {
             cards[51] = new Card(4, 9);
         }
 
+
+
+    }
+    public void generateStackSetup(Card[] cards, Stack[] stacks){
+        // Create 53 stacks
+        for (int i = 0; i < stacks.length; i++) {
+            stacks[i] = new Stack(i);
+        }
+
+        for (int i = 0; i < cards.length; i++) {
+            if (i < 4 || (i >= 40 && i < 45) || i == 51) {
+                cards[i].setCanMove(true);
+            } else {
+                cards[i].setCanMove(false);
+            }
+            if (i < 48) {
+                stacks[i].addCardToStack(cards[i]);
+            } else {
+                stacks[i + 1].addCardToStack(cards[i]);
+            }
+        }
     }
 
     /**
@@ -559,18 +586,6 @@ public class GameActivity extends AppCompatActivity {
         cards[49].setImageView((ImageView) findViewById(R.id.card49));
         cards[50].setImageView((ImageView) findViewById(R.id.card50));
         cards[51].setImageView((ImageView) findViewById(R.id.card51));
-        for (int i = 0; i < cards.length; i++) {
-            if (i < 4 || (i >= 40 && i < 45) || i == 51) {
-                cards[i].setCanMove(true);
-            } else {
-                cards[i].setCanMove(false);
-            }
-            if (i < 48) {
-                stacks[i].addCardToStack(cards[i]);
-            } else {
-                stacks[i + 1].addCardToStack(cards[i]);
-            }
-        }
     }
 
     // Set stack location

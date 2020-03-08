@@ -48,6 +48,12 @@ public class DragDrop {
     public static int step = 0;
     public static Context c;
 
+    public void main(Card[] c, Stack[] s){
+        cards = c;
+        stacks = s;
+    }
+
+
     /**
      * Main method of the Drag and Drop feature. Called from GameActivity, and this will take
      * care of the Drag and Drop with the game rules
@@ -430,12 +436,12 @@ public class DragDrop {
                 for (int i = 1; i <= whichStack / 4; i++) {
                     if (whichStack + 4 * i < 44) {
                         if (stacks[(whichStack + 4 * i)].getCurrentCards().size() != 0) {
-                            Log.d("", "Stack < 40, stacks to right have cards");
+                            //Log.d("", "Stack < 40, stacks to right have cards");
                             return false;
                         }
                     }
                 }
-                Log.d("", "Stack < 40, stacks to right no cards");
+                //Log.d("", "Stack < 40, stacks to right no cards");
                 return true;
             } else {
                 return false;

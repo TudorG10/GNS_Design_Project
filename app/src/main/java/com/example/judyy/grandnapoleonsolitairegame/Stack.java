@@ -206,4 +206,17 @@ public class Stack implements Cloneable{
         return this.width;
     }
 
+    @Override
+    public String toString() {
+        String s = "-------------------\n";
+        s += " Stack : " + this.stackID;
+        s += " x : " + this.location[0];
+        s += " y : " + this.location[1];
+        s += " STACKS CARDS ARE: \n";
+        for (Card c : currentCards){
+            s += c.toString();
+        }
+        s += "\n";
+        return s;
+    }
 }
