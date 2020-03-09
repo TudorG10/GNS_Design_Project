@@ -87,8 +87,6 @@ public class GameActivity extends AppCompatActivity {
             }
 //            gameIsWinnable = true;
         }
-        int[][] encodedCards = new int[52][2];
-        encodeBoardState(cards, encodedCards);
 
         generateInitialStackSetup(cards, stacks);
         displayCards(cards, stacks);
@@ -262,7 +260,7 @@ public class GameActivity extends AppCompatActivity {
                 ArrayList<Pair<Card, Stack>> availableMoves = null;
                 Random r = new Random();
                 int i=0;
-                ArrayList<Pair<Card, Stack>> history = new ArrayList<Pair<Card, Stack>>();
+                ArrayList<String> history = new ArrayList<String>();
                 while (true){
                     if (i>50){
                         printMoveHistory(history);
@@ -274,16 +272,15 @@ public class GameActivity extends AppCompatActivity {
                         return (DragDrop.isWin(gameStacks));
                     }
                     Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
+                    history.add("From: " + aMove.first.toString() + " To " + aMove.second.toString());
                     DragDrop.updateCardOnStacks(gameStacks[aMove.first.getCurrentStackID()],
                                                 aMove.first,gameStacks[aMove.second.getStackID()]);
-                    history.add(aMove);
-
                 }
     }
 
-    private void printMoveHistory(ArrayList<Pair<Card,Stack>> history){
-        for (Pair<Card,Stack> move : history){
-            System.out.println("From: " + move.first.toString() + " To " + move.second.toString());
+    private void printMoveHistory(ArrayList<String> history){
+        for (String s: history){
+            System.out.println(s);
         }
     }
 
@@ -495,9 +492,6 @@ public class GameActivity extends AppCompatActivity {
     }
     public void generateInitialStackSetup(Card[] cards, Stack[] stacks){
         // Create 53 stacks
-//        for (int i = 0; i < stacks.length; i++) {
-//            stacks[i] = new Stack(i);
-//        }
 
         stacks[48] = new Stack(48);
         for (int i = 0; i < cards.length; i++) {
