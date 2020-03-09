@@ -262,8 +262,10 @@ public class GameActivity extends AppCompatActivity {
                 ArrayList<Pair<Card, Stack>> availableMoves = null;
                 Random r = new Random();
                 int i=0;
+                ArrayList<Pair<Card, Stack>> history = new ArrayList<Pair<Card, Stack>>();
                 while (true){
                     if (i>50){
+                        printMoveHistory(history);
                         return true;
                     }
                     i++;
@@ -274,8 +276,15 @@ public class GameActivity extends AppCompatActivity {
                     Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
                     DragDrop.updateCardOnStacks(gameStacks[aMove.first.getCurrentStackID()],
                                                 aMove.first,gameStacks[aMove.second.getStackID()]);
+                    history.add(aMove);
 
                 }
+    }
+
+    private void printMoveHistory(ArrayList<Pair<Card,Stack>> history){
+        for (Pair<Card,Stack> move : history){
+            System.out.println("From: " + move.first.toString() + " To " + move.second.toString());
+        }
     }
 
     /**
