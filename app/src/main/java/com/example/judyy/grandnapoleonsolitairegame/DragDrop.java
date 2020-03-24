@@ -3,9 +3,11 @@ package com.example.judyy.grandnapoleonsolitairegame;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -22,7 +24,7 @@ import android.widget.TextView;
  * @version 1.0 10/15/2017
  */
 
-public class DragDrop {
+public class DragDrop extends AppCompatActivity {
     // Private variables only in DragDrop
     private static float dx, dy, x, y, initialX, initialY;
     private static float stackHeight;
@@ -262,8 +264,12 @@ public class DragDrop {
         }
 
         if (isWin(this.stacks)){
-            Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
-            mWinSnackbar.show();
+            //TODO add napoleon win pop up
+//            Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
+//            mWinSnackbar.show();
+            Intent victoryScreen = new Intent(this, VictoryScreen.class);
+            startActivity(victoryScreen);
+
         }
     }
 

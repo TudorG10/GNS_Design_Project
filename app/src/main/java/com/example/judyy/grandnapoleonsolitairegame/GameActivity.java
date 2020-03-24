@@ -51,6 +51,7 @@ public class GameActivity extends AppCompatActivity {
     private static int RED = Color.argb(123,255,0,0);
     private static int CELLAR_RED = Color.argb(255,255,0,0);
     private static int numMCTrialsPerBoard = 50;
+    private static int mcDEPTH = 35;
 
 
 
@@ -75,17 +76,25 @@ public class GameActivity extends AppCompatActivity {
         //Display card to table
 
         boolean gameIsWinnable = false;
+//        long t = System.currentTimeMillis();
+
+//        while (!gameIsWinnable && System.currentTimeMillis() - t < 1000) {
         while (!gameIsWinnable) {
             generateCardSetup(type, cards);
 
-//            Comment out this for loop, and uncomment "gameIsWinnable=true" to play normally.
+            if(type.equals("dummy")) break;
+
             for (int i = 0; i < this.numMCTrialsPerBoard && !gameIsWinnable; i++) {
                 Card[] clonedCards = cards.clone();
                 Stack[] clonedStacks = new Stack[53];
                 generateInitialStackSetup(clonedCards, clonedStacks);
-                gameIsWinnable = mcSimulation(clonedStacks, clonedCards);
+                if (i %2 == 0){
+                    gameIsWinnable = mcSimulation(clonedStacks, clonedCards, 1);
+                }
+                else {
+                    gameIsWinnable = mcSimulation(clonedStacks, clonedCards, -1);
+                }
             }
-//            gameIsWinnable = true;
         }
 
         generateInitialStackSetup(cards, stacks);
@@ -177,57 +186,39 @@ public class GameActivity extends AppCompatActivity {
             }
         });
 
-/*
-        final ImageView hintBtn = findViewById(R.id.hint_btn);
-        hintBtn.setImageResource(R.drawable.hint_btn);
-        solver.setDirection();
-        mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
-        hintBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                for (int i=0; i<52; i++){
-                    ImageView cardImg = cards[i].getImageView();
-                    cardImg.clearColorFilter();
-                }
-                Hint mHint = solver.requestHint();
-                if (mHint == null){
-                    Log.d("Hint", "No Hint");
-                    mHintSnackbar.show();
-                } else {
-                    int originCard = mHint.getOrigin();
-//                    Card cardToMove = null;
-//                    while (cardToMove == null){
-                    Card cardToMove = stacks[originCard].getLastCard();
-                    int destinationCard = mHint.getDestination();
-//                    Card cardToStack = null;
-                    Card cardToStack = stacks[destinationCard].getLastCard();
-                    if (cardToMove == null){
-                        Log.d("Hint", String.valueOf(originCard));
-
-                    } else {
-                        ImageView orgImage = cardToMove.getImageView();
-                        orgImage.setColorFilter(Color.argb(123, 0, 255, 162));
+    }
+    /**
+     * Function to check if a game is playable
+     * @return true if a game is winnable from the current state
+     */
+    private boolean mcSimulation(Stack[] gameStacks, Card[] gameCards, int direction){
+                ArrayList<Pair<Card, Stack>> availableMoves = null;
+                Random r = new Random();
+                DragDrop.setDirection(direction);
+                int i=0;
+//                ArrayList<String> history = new ArrayList<String>();
+                while (true){
+                    if (i > mcDEPTH){
+//                        printMoveHistory(history);
+                        return true;
                     }
-
-                    if (cardToStack == null){
-                        Log.d("Hint", String.valueOf(destinationCard));
-                    } else {
-                        ImageView destImage = cardToStack.getImageView();
-                        destImage.setColorFilter(Color.argb(123, 255, 127, 80));
+                    i++;
+                    availableMoves = getMoves(gameCards, gameStacks);
+                    if (availableMoves.size() == 0 ){
+                        return (DragDrop.isWin(gameStacks));
                     }
+                    Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
+                    int currentStackID = aMove.first.getCurrentStackID();
+//                    history.add("From: " + gameStacks[currentStackID].getLastCard().toString() + "To " + aMove.second.toString());
+                    while(gameStacks[currentStackID].getCurrentCards().size() != 0){
+//                        System.out.println("stuff happens?");
+                        DragDrop.updateCardOnStacks(
+                                gameStacks[currentStackID]
+                                ,gameStacks[currentStackID].getLastCard()
+                                ,gameStacks[aMove.second.getStackID()]);
 
-//                    cardToMove.setOnTouchListener(new View.OnTouchListener(){
-//                        @Override
-//                        public boolean onTouch(View view, MotionEvent motionEvent) {
-//                            cardToMove.clearColorFilter();
-//                            cardToMove.setOnTouchListener(null);
-//                            return false;
-//                        }
-//                    });
+                    }
                 }
-            }
-        });*/
-
     }
 
     /**
@@ -251,36 +242,15 @@ public class GameActivity extends AppCompatActivity {
             gameCards[i] = new Card(encodedCards[i][0], encodedCards[i][1]);
         }
     }
-
-    /**
-     * Function to check if a game is playable
-     * @return true if a game is winnable from the current state
-     */
-    private boolean mcSimulation(Stack[] gameStacks, Card[] gameCards){
-                ArrayList<Pair<Card, Stack>> availableMoves = null;
-                Random r = new Random();
-                int i=0;
-                ArrayList<String> history = new ArrayList<String>();
-                while (true){
-                    if (i>50){
-                        printMoveHistory(history);
-                        return true;
-                    }
-                    i++;
-                    availableMoves = getMoves(gameCards, gameStacks);
-                    if (availableMoves.size() == 0 ){
-                        return (DragDrop.isWin(gameStacks));
-                    }
-                    Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
-                    history.add("From: " + aMove.first.toString() + " To " + aMove.second.toString());
-                    DragDrop.updateCardOnStacks(gameStacks[aMove.first.getCurrentStackID()],
-                                                aMove.first,gameStacks[aMove.second.getStackID()]);
-                }
-    }
-
     private void printMoveHistory(ArrayList<String> history){
+        DragDrop.setDirection(0);
         for (String s: history){
+            System.out.println();
+            System.out.println();
+            System.out.println("+++++++++++++++NEW MOVE+++++++++++++++++++++++++++++");
             System.out.println(s);
+            System.out.println("+++++++++++++++END MOVE+++++++++++++++++++++++++++++");
+
         }
     }
 
@@ -436,58 +406,60 @@ public class GameActivity extends AppCompatActivity {
         } else if (type.equals("dummy")) {
             // when predetermined selected - by place card into stack associated
             // TODO - Find at least a layout of solving game - Below is just a dummy layout
-            cards[0] = new Card(1, 2);
-            cards[1] = new Card(2, 2);
-            cards[2] = new Card(3, 2);
-            cards[3] = new Card(4, 2);
-            cards[4] = new Card(1, 7);
-            cards[5] = new Card(2, 7);
-            cards[6] = new Card(3, 7);
-            cards[7] = new Card(4, 7);
-            cards[8] = new Card(1, 6);
-            cards[9] = new Card(2, 6);
-            cards[10] = new Card(3, 6);
-            cards[11] = new Card(4, 6);
-            cards[12] = new Card(1, 5);
-            cards[13] = new Card(2, 5);
-            cards[14] = new Card(3, 5);
-            cards[15] = new Card(4, 5);
-            cards[16] = new Card(1, 4);
-            cards[17] = new Card(2, 4);
-            cards[18] = new Card(3, 4);
-            cards[19] = new Card(4, 4);
-            cards[20] = new Card(1, 1);
-            cards[21] = new Card(2, 1);
-            cards[22] = new Card(3, 1);
-            cards[23] = new Card(4, 1);
-            cards[24] = new Card(1, 10);
-            cards[25] = new Card(2, 10);
-            cards[26] = new Card(3, 10);
-            cards[27] = new Card(4, 10);
-            cards[28] = new Card(1, 11);
-            cards[29] = new Card(2, 11);
-            cards[30] = new Card(3, 11);
-            cards[31] = new Card(4, 11);
-            cards[32] = new Card(1, 12);
-            cards[33] = new Card(2, 12);
-            cards[34] = new Card(3, 12);
-            cards[35] = new Card(4, 12);
-            cards[36] = new Card(1, 3);
-            cards[37] = new Card(2, 3);
-            cards[38] = new Card(3, 3);
-            cards[39] = new Card(4, 3);
-            cards[40] = new Card(1, 13);
-            cards[41] = new Card(2, 13);
-            cards[42] = new Card(3, 13);
-            cards[43] = new Card(4, 13);
-            cards[44] = new Card(1, 8);
-            cards[45] = new Card(2, 8);
-            cards[46] = new Card(3, 8);
-            cards[47] = new Card(4, 8);
-            cards[48] = new Card(1, 9);
-            cards[49] = new Card(2, 9);
-            cards[50] = new Card(3, 9);
-            cards[51] = new Card(4, 9);
+            // 1 for Diamonds, 2 for Clubs, 3 for Hearts, 4 for Spades
+
+            cards[0] = new Card(2, 2);
+            cards[1] = new Card(1, 7);
+            cards[2] = new Card(1, 1);
+            cards[3] = new Card(2, 4);
+            cards[4] = new Card(3, 2);
+            cards[5] = new Card(4, 9);
+            cards[6] = new Card(1, 6);
+            cards[7] = new Card(3, 8);
+            cards[8] = new Card(2, 13);
+            cards[9] = new Card(1, 5);
+            cards[10] = new Card(3, 1);
+            cards[11] = new Card(2, 5);
+            cards[12] = new Card(2, 6);
+            cards[13] = new Card(3, 12);
+            cards[14] = new Card(2, 12);
+            cards[15] = new Card(1, 4);
+            cards[16] = new Card(4, 4);
+            cards[17] = new Card(2, 8);
+            cards[18] = new Card(2, 11);
+            cards[19] = new Card(1, 12);
+            cards[20] = new Card(1, 10);
+            cards[21] = new Card(2, 10);
+            cards[22] = new Card(3, 10);
+            cards[23] = new Card(4, 10);
+            cards[24] = new Card(4, 7);
+            cards[25] = new Card(2, 7);
+            cards[26] = new Card(3, 7);
+            cards[27] = new Card(4, 1);
+            cards[28] = new Card(4, 6);
+            cards[29] = new Card(4, 5);
+            cards[30] = new Card(4, 12);
+            cards[31] = new Card(3, 3);
+            cards[32] = new Card(3, 11);
+            cards[33] = new Card(2, 1);
+            cards[34] = new Card(2, 9);
+            cards[35] = new Card(1, 11);
+            cards[36] = new Card(4, 3);
+            cards[37] = new Card(1, 13);
+            cards[38] = new Card(4, 13);
+            cards[39] = new Card(1, 3);
+            cards[40] = new Card(1, 8);
+            cards[41] = new Card(1, 9);
+            cards[42] = new Card(4, 8);
+            cards[43] = new Card(1, 2);
+            cards[44] = new Card(3, 6);
+            cards[45] = new Card(2, 3);
+            cards[46] = new Card(3, 9);
+            cards[47] = new Card(4, 11);
+            cards[48] = new Card(3, 4);
+            cards[49] = new Card(3, 13);
+            cards[50] = new Card(4, 2);
+            cards[51] = new Card(3, 5);
         }
     }
     public void generateInitialStackSetup(Card[] cards, Stack[] stacks){
@@ -649,7 +621,5 @@ public class GameActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         setStacksLocation();
     }
-
-
 
 }
