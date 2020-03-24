@@ -30,6 +30,10 @@
             android:name=".AboutActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             android:screenOrientation="landscape"/>
+        <activity
+            android:name=".VictoryScreen"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="landscape"/>
     </application>
 
 </manifest>

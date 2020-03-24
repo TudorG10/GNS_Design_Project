@@ -262,12 +262,16 @@ public class DragDrop extends AppCompatActivity {
             cardImage.setX(xToSet);
             cardImage.setY(yToSet);
         }
-
+        System.out.println("CONTEXT WHEN PLAYING IS" + c);
         if (isWin(this.stacks)){
             //TODO add napoleon win pop up
 //            Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
 //            mWinSnackbar.show();
-            Intent victoryScreen = new Intent(this, VictoryScreen.class);
+            System.out.println("CONTEXT WHEN winning IS: " + c);
+
+            Intent victoryScreen = new Intent(c, VictoryScreen.class);
+            System.out.println("intent WHEN winning IS: " + victoryScreen);
+
             startActivity(victoryScreen);
 
         }

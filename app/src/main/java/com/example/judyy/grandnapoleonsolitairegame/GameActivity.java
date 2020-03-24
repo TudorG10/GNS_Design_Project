@@ -53,8 +53,6 @@ public class GameActivity extends AppCompatActivity {
     private static int numMCTrialsPerBoard = 50;
     private static int mcDEPTH = 35;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,28 +159,31 @@ public class GameActivity extends AppCompatActivity {
         hintBtn.setImageResource(R.drawable.hint_btn);
         hintBtn.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                DragDrop.clearCardColours(cards);
-                //call method to acquire list of moves
-                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
-
-                //pick a move to give hint
-                mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
-                if(availableMoves.size() == 0){
-                    mHintSnackbar.show();
-                }
-                else{
-                    int index = new Random().nextInt(availableMoves.size());
-                    Pair<Card, Stack> aMove = availableMoves.get(index);
-                    aMove.first.getImageView().setColorFilter(GREEN);
-                    //if colouring cellar, crashes, since no card in it
-                    if(aMove.second.getLastCard() == null){//case cellar
-                        aMove.second.getImageView().setColorFilter(CELLAR_RED);
-                    }
-                    else{//case normal card
-                        aMove.second.getLastCard().getImageView().setColorFilter(RED);
-                    }
-                    availableMoves.remove(aMove);
-                }
+                System.out.println("CONTEXT IS THIS: " + context);
+                Intent victoryScreen = new Intent(context, VictoryScreen.class);
+                startActivity(victoryScreen);
+//                DragDrop.clearCardColours(cards);
+//                //call method to acquire list of moves
+//                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
+//
+//                //pick a move to give hint
+//                mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
+//                if(availableMoves.size() == 0){
+//                    mHintSnackbar.show();
+//                }
+//                else{
+//                    int index = new Random().nextInt(availableMoves.size());
+//                    Pair<Card, Stack> aMove = availableMoves.get(index);
+//                    aMove.first.getImageView().setColorFilter(GREEN);
+//                    //if colouring cellar, crashes, since no card in it
+//                    if(aMove.second.getLastCard() == null){//case cellar
+//                        aMove.second.getImageView().setColorFilter(CELLAR_RED);
+//                    }
+//                    else{//case normal card
+//                        aMove.second.getLastCard().getImageView().setColorFilter(RED);
+//                    }
+//                    availableMoves.remove(aMove);
+//                }
             }
         });
 
@@ -612,6 +613,7 @@ public class GameActivity extends AppCompatActivity {
             int tempID = cards[i].getCurrentStackID();
             cards[i].setXYPositions(stacks[tempID].getLeftSideLocation(), stacks[tempID].getTopSideLocation());
         }
+        System.out.println("CONTEXT WHEN STARTING: " + context);
         new DragDrop().main(context, cards, stacks, recorder, solver);
 
     }

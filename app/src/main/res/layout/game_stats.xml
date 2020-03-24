@@ -7,10 +7,10 @@
     android:background="@drawable/napoleon_win"
     tools:context="com.example.judyy.grandnapoleonsolitairegame.DifficultySelectionActivity">
 
-    <EditText
+    <TextView
         android:id="@+id/victory_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="228dp"
+        android:layout_height="58dp"
         android:ems="10"
         android:gravity="center"
         android:inputType="textPersonName"
@@ -19,10 +19,13 @@
         android:text="Victory!"
         android:textColor="#FF0000"
         android:textSize="44sp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.002" />
 
-    <EditText
+    <TextView
         android:id="@+id/total_points"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,7 +34,7 @@
         tools:layout_editor_absoluteX="97dp"
         tools:layout_editor_absoluteY="297dp" />
 
-    <EditText
+    <TextView
         android:id="@+id/total_moves"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
