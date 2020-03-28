@@ -21,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
     public void onClickDifficultySelection(View v){
         startActivity(new Intent(this, DifficultySelectionActivity.class));
     }
-
+    public void onClickStatsPage(View v){
+        startActivity(new Intent(this, GlobalStats.class));
+    }
 
     public void onClickAboutPage(View v){
         startActivity(new Intent(this, AboutActivity.class));

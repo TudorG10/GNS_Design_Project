@@ -176,7 +176,7 @@ public class DragDrop extends AppCompatActivity {
 
         // Check if target stack is valid for putting cards on
         if (validStack) {
-
+            GameActivity.totalMoves += 1;
             // Set values to record later
             float previousX = card.getXPosition();
             float previousY = card.getYPosition();
@@ -226,7 +226,9 @@ public class DragDrop extends AppCompatActivity {
                         xToSet = stackToDrop.getLeftSideLocation() - xSpaceStack;
                         yToSet = stackToDrop.getTopSideLocation();
                     // In the base stacks, set offset to below
+                    // THESE ARE THE SOLUTIONS STACKS
                     } else if (whichStack < 24) {
+                        GameActivity.totalPoints += 10;
                         xToSet = stackToDrop.getLeftSideLocation();
                         yToSet = stackToDrop.getTopSideLocation() + ySpaceStack;
                     } else if (whichStack < 44) {

@@ -27,30 +27,13 @@ public class VictoryScreen extends AppCompatActivity {
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.game_stats);
 
-        StringBuilder info = new StringBuilder();
-        try {
-            File input = new File("./gamedata.txt");
-            BufferedReader reader = new BufferedReader(new FileReader(input));
-            String line;
-            while ((line = reader.readLine()) != null){
-                System.out.println("line is" + line);
-                info.append(line);
-                info.append("\n");
-            }
-            reader.close();
-        }
-        catch(FileNotFoundException e){
-            System.out.println(e.getMessage());
-        }
-        catch(IOException e){
-            System.out.println(e.getMessage());
-        }
-        System.out.println("text is: " + info);
 
+        String info = FileHelper.ReadFile(this);
+        System.out.println(info);
         TextView points = (TextView)findViewById(R.id.total_points);
-        points.setText(info);
+        points.setText(GameActivity.totalPoints + " points!");
         TextView moves = (TextView)findViewById(R.id.total_moves);
-        moves.setText(info);
+        moves.setText(GameActivity.totalMoves + " moves!");
 
 
     }

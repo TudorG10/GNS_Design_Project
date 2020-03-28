@@ -4,55 +4,55 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/napoleon_win"
-    tools:context="com.example.judyy.grandnapoleonsolitairegame.VictoryScreen">
+    android:background="@drawable/napoleon_stats"
+    tools:context="com.example.judyy.grandnapoleonsolitairegame.GlobalStats">
 
     <TextView
-        android:id="@+id/victory_text"
-        android:layout_width="302dp"
-        android:layout_height="105dp"
+        android:id="@+id/stats_title"
+        android:layout_width="257dp"
+        android:layout_height="97dp"
         android:ems="10"
         android:gravity="center"
         android:inputType="textPersonName"
         android:selectAllOnFocus="false"
         android:singleLine="false"
-        android:text="Victory!"
+        android:text="Career"
         android:textColor="#fff"
-        android:textSize="72sp"
+        android:textSize="66sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.002" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
-        android:id="@+id/total_points"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/stats_info"
+        android:layout_width="254dp"
+        android:layout_height="329dp"
         android:ems="10"
-        android:gravity="center"
+        android:gravity="left"
         android:inputType="textPersonName"
-        android:textSize="44sp"
+        android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.971"
+        app:layout_constraintHorizontal_bias="0.993"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.089" />
+        app:layout_constraintVertical_bias="0.963" />
 
-    <TextView
-        android:id="@+id/total_moves"
+    <ImageButton
+        android:id="@+id/menu_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:gravity="center"
-        android:inputType="textPersonName"
-        android:textSize="44sp"
+        android:background="@null"
+        android:onClick="returnToMainMenu"
+        android:src="@drawable/back_btn_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintHorizontal_bias="0.001"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.089" />
+        app:layout_constraintVertical_bias="0.0" />
 
 </android.support.constraint.ConstraintLayout>
