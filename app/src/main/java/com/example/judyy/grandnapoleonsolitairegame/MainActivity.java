@@ -21,10 +21,11 @@ public class MainActivity extends AppCompatActivity {
     public void onClickDifficultySelection(View v){
         startActivity(new Intent(this, DifficultySelectionActivity.class));
     }
+    //navigate to statistics page
     public void onClickStatsPage(View v){
         startActivity(new Intent(this, GlobalStats.class));
     }
-
+    //navigate to about page
     public void onClickAboutPage(View v){
         startActivity(new Intent(this, AboutActivity.class));
     }

@@ -101,97 +101,6 @@ public class GameActivity extends AppCompatActivity {
         generateInitialStackSetup(cards, stacks);
         displayCards(cards, stacks);
 
-        //zoom button
-        final GameLayout gameLayout = findViewById(R.id.zoom_linear_layout);
-        final ImageView zoomToggle = findViewById(R.id.zoom_toggle);
-        zoomToggle.setImageResource(R.drawable.zoom_btn);
-        zoomToggle.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                boolean zooming = gameLayout.toggleZooming();
-                if (zooming){
-                    // Sort of Blue More like Green color filter
-                    zoomToggle.setColorFilter(Color.argb(123, 0, 255, 162));
-                } else {
-                    zoomToggle.clearColorFilter();
-                }
-            }
-        });
-        //quit game button
-        final ImageView backBtn = findViewById(R.id.back_btn);
-        backBtn.setImageResource(R.drawable.back_btn);
-        backBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                //Pop-up to confirm quitting game appears
-                AlertDialog.Builder quitPopUp = new AlertDialog.Builder(context);
-                quitPopUp.setCancelable(true);
-                quitPopUp.setTitle("Quit Game");
-                quitPopUp.setMessage("Are you sure you want to quit the current game?");
-                quitPopUp.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(android.content.DialogInterface dialog, int which) {
-                        onBackPressed();
-                    }
-                });
-                quitPopUp.setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(android.content.DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = quitPopUp.create();
-                dialog.show();
-
-            }
-        });
-
-        //undo button
-        final ImageView undoBtn = findViewById(R.id.undo_btn);
-        undoBtn.setImageResource(R.drawable.undo_btn);
-        undoBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                totalPoints -= 5;
-                totalMoves += 1;
-                recorder.undoOneStep();
-            }
-        });
-
-        //TODO new hint functionality
-        final ImageView hintBtn = findViewById(R.id.hint_btn);
-        hintBtn.setImageResource(R.drawable.hint_btn);
-        hintBtn.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-//                System.out.println("CONTEXT IS THIS: " + context);
-//                Intent victoryScreen = new Intent(context, VictoryScreen.class);
-//                startActivity(victoryScreen);
-                DragDrop.clearCardColours(cards);
-                //call method to acquire list of moves
-                ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
-
-                //pick a move to give hint
-                mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
-                if(availableMoves.size() == 0){
-                    mHintSnackbar.show();
-                }
-                else{
-                    int index = new Random().nextInt(availableMoves.size());
-                    Pair<Card, Stack> aMove = availableMoves.get(index);
-                    aMove.first.getImageView().setColorFilter(GREEN);
-                    //if colouring cellar, crashes, since no card in it
-                    if(aMove.second.getLastCard() == null){//case cellar
-                        aMove.second.getImageView().setColorFilter(CELLAR_RED);
-                    }
-                    else{//case normal card
-                        aMove.second.getLastCard().getImageView().setColorFilter(RED);
-                    }
-                    availableMoves.remove(aMove);
-                }
-            }
-        });
-
     }
     /**
      * Function to check if a game is playable
@@ -618,8 +527,7 @@ public class GameActivity extends AppCompatActivity {
             int tempID = cards[i].getCurrentStackID();
             cards[i].setXYPositions(stacks[tempID].getLeftSideLocation(), stacks[tempID].getTopSideLocation());
         }
-        System.out.println("CONTEXT WHEN STARTING: " + context);
-        new DragDrop().main(context, cards, stacks, recorder, solver);
+        new DragDrop().main(context, cards, stacks, recorder, solver, this);
 
     }
 
@@ -629,4 +537,94 @@ public class GameActivity extends AppCompatActivity {
         setStacksLocation();
     }
 
+    /**
+     * this is a stupid workaround in order to change page from the game
+     */
+    public void win() {
+        startActivity(new Intent(this, VictoryScreen.class));
+    }
+    //quit game button
+    public void returnToMainMenu(View v){
+
+        //Pop-up to confirm quitting game appears
+        AlertDialog.Builder quitPopUp = new AlertDialog.Builder(context);
+        quitPopUp.setCancelable(true);
+        quitPopUp.setTitle("Quit Game");
+        quitPopUp.setMessage("Are you sure you want to quit the current game?");
+        quitPopUp.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(android.content.DialogInterface dialog, int which) {
+                startActivity(new Intent(context, MainActivity.class));
+            }
+        });
+        quitPopUp.setNegativeButton("No", new android.content.DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(android.content.DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = quitPopUp.create();
+        dialog.show();
+    }
+
+    /**
+     * method to update the statistics during the game
+     */
+    public void updateGameStats(){
+        TextView points = (TextView)findViewById(R.id.currentPoints);
+        points.setText(GameActivity.totalPoints + " points!");
+        TextView moves = (TextView)findViewById(R.id.currentMoves);
+        moves.setText(GameActivity.totalMoves + " moves!");
+    }
+
+    public void onClickGetHint(View v){
+        totalPoints -= 5;
+        totalMoves += 1;
+        updateGameStats();
+        DragDrop.clearCardColours(cards);
+        //call method to acquire list of moves
+        ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
+        GameLayout gameLayout = findViewById(R.id.zoom_linear_layout);
+        //pick a move to give hint
+        mHintSnackbar = Snackbar.make(gameLayout, R.string.No_Hint, Snackbar.LENGTH_SHORT);
+        if(availableMoves.size() == 0){
+            mHintSnackbar.show();
+        }
+        else{
+            int index = new Random().nextInt(availableMoves.size());
+            Pair<Card, Stack> aMove = availableMoves.get(index);
+            aMove.first.getImageView().setColorFilter(GREEN);
+            //if colouring cellar, crashes, since no card in it
+            if(aMove.second.getLastCard() == null){//case cellar
+                aMove.second.getImageView().setColorFilter(CELLAR_RED);
+            }
+            else{//case normal card
+                aMove.second.getLastCard().getImageView().setColorFilter(RED);
+            }
+            availableMoves.remove(aMove);
+        }
+    }
+
+    //undo button
+    public void undoMove(View v){
+        totalPoints -= 10;
+        totalMoves += 1;
+        updateGameStats();
+        recorder.undoOneStep();
+    }
+    //zoom button
+    public void zoom(View v){
+        GameLayout gameLayout = findViewById(R.id.zoom_linear_layout);
+        ImageView zoomToggle = findViewById(R.id.zoom_toggle);
+
+        boolean zooming = gameLayout.toggleZooming();
+        if (zooming){
+        // Sort of Blue More like Green color filter
+            zoomToggle.setColorFilter(Color.argb(123, 0, 255, 162));
+        }
+        else {
+            zoomToggle.clearColorFilter();
+        }
+    }
 }

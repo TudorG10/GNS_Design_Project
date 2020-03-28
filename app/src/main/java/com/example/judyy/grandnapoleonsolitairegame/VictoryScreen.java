@@ -38,4 +38,8 @@ public class VictoryScreen extends AppCompatActivity {
 
     }
 
+    public void returnToMainMenu(View v){
+        startActivity(new Intent(this, MainActivity.class));
+    }
+
 }

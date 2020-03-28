@@ -49,6 +49,7 @@ public class DragDrop extends AppCompatActivity {
 
     public static int step = 0;
     public static Context c;
+    private static GameActivity g;
 
     public void main(Card[] c, Stack[] s){
         cards = c;
@@ -66,7 +67,7 @@ public class DragDrop extends AppCompatActivity {
      * @param counter The TextView element of the counter
      * @param undo    The Button element of the undo button
      */
-    public void main(Context context, Card[] c, Stack[] s, Recorder r, HintSolver hint) {
+    public void main(Context context, Card[] c, Stack[] s, Recorder r, HintSolver hint, GameActivity game) {
         // Assignment for variables used in Drag and Drop
         cards = c;
         stacks = s;
@@ -78,6 +79,7 @@ public class DragDrop extends AppCompatActivity {
         stackHeight = stacks[0].getHeight();    // Set stack height
         stackWidth = stacks[0].getWidth();      // Set stack width
         this.c = context;
+        this.g = game;
 
         // Enable touch for cards
         enableTouch();
@@ -254,8 +256,11 @@ public class DragDrop extends AppCompatActivity {
                     cardImage.setY(card.getYPosition());
                 }
             }
+            //update stats display
+            g.updateGameStats();
             // Record
             if (!recorded) recorder.recordStep(card, previousX, previousY, previousStack, previousCanMove);
+
 
             // Not valid, add card back to where it was
         } else {
@@ -264,17 +269,13 @@ public class DragDrop extends AppCompatActivity {
             cardImage.setX(xToSet);
             cardImage.setY(yToSet);
         }
-        System.out.println("CONTEXT WHEN PLAYING IS" + c);
         if (isWin(this.stacks)){
             //TODO add napoleon win pop up
 //            Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
 //            mWinSnackbar.show();
-            System.out.println("CONTEXT WHEN winning IS: " + c);
 
-            Intent victoryScreen = new Intent(c, VictoryScreen.class);
-            System.out.println("intent WHEN winning IS: " + victoryScreen);
+            g.win();
 
-            startActivity(victoryScreen);
 
         }
     }

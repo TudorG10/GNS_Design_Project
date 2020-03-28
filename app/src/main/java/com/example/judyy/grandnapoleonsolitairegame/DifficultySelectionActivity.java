@@ -30,5 +30,7 @@ public class DifficultySelectionActivity extends AppCompatActivity {
         startActivity(dummyMode);
     }
 
-
+    public void returnToMainMenu(View v){
+        startActivity(new Intent(this, MainActivity.class));
+    }
 }
