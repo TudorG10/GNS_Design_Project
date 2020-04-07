@@ -38,7 +38,7 @@ public class DragDrop extends AppCompatActivity {
         DragDrop.direction = direction;
     }
     // Input from GameActivity
-    private static Card[] cards;
+//    private static Card[] cards;
     private static Stack[] stacks;
     private static Recorder recorder;
     private static HintSolver solver;
@@ -52,7 +52,7 @@ public class DragDrop extends AppCompatActivity {
     private static GameActivity g;
 
     public void main(Card[] c, Stack[] s){
-        cards = c;
+//        cards = c;
         stacks = s;
     }
 
@@ -64,12 +64,10 @@ public class DragDrop extends AppCompatActivity {
      * @param context
      * @param c       The array of cards created in GameActivity
      * @param s       The array of stacks created in GameActivity
-     * @param counter The TextView element of the counter
-     * @param undo    The Button element of the undo button
      */
     public void main(Context context, Card[] c, Stack[] s, Recorder r, HintSolver hint, GameActivity game) {
         // Assignment for variables used in Drag and Drop
-        cards = c;
+//        cards = c;
         stacks = s;
         recorder = r;
         solver = hint;
@@ -182,6 +180,7 @@ public class DragDrop extends AppCompatActivity {
             // Set values to record later
             float previousX = card.getXPosition();
             float previousY = card.getYPosition();
+
             int previousStack = card.getCurrentStackID();
             boolean previousCanMove = card.getCanMove();
             boolean recorded = false;
@@ -296,6 +295,7 @@ public class DragDrop extends AppCompatActivity {
         }
         stackToDrop.addCardToStack(card);
     }
+
     public static void moveCard(Stack currentStack, Card card, Stack stackToDrop, float xToSet, float yToSet) {
         ImageView cardImage = card.getImageView();
         cardImage.bringToFront();
@@ -308,20 +308,19 @@ public class DragDrop extends AppCompatActivity {
         card.setXYPositions(xToSet, yToSet);
         //reset highlighted cards
         //TODO in case i forget i added this here
-        clearCardColours(cards);
+        clearCardColours();
     }
 
     /**
      * Method to clear colour on all cards and the cellar
      *
-     * @param cardSet list of cards to reset their colour
      */
-    public static void clearCardColours(Card[] cardSet) {
-        for (Card aCard : cardSet) {
-            aCard.getImageView().clearColorFilter();
+    public static void clearCardColours() {
+        for (Stack aStack: stacks){
+            for (Card aCard: aStack.getCurrentCards()){
+                aCard.getImageView().clearColorFilter();
+            }
         }
-        //clear cellar as well
-        stacks[48].getImageView().clearColorFilter();
     }
 
 
@@ -585,9 +584,14 @@ public class DragDrop extends AppCompatActivity {
      * @parem none
      */
     private void enableTouch() {
-        for (int i = 0; i < 52; i ++) {
+        for (int i = 0; i < 53; i ++) {
             final int finalI = i;
-            cards[finalI].getImageView().setOnTouchListener(new View.OnTouchListener() {
+            final Card card = stacks[finalI].getLastCard();
+            if (card == null){
+                continue;
+            }
+//            final Card card = cards[finalI];
+            card.getImageView().setOnTouchListener(new View.OnTouchListener() {
                 // Double Tap Control Feature
                 private GestureDetector gestureDetector = new GestureDetector(new GestureDetector.SimpleOnGestureListener() {
                     @Override
@@ -598,7 +602,7 @@ public class DragDrop extends AppCompatActivity {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                myDoubleTap(cards[finalI]);
+                                myDoubleTap(card);
                             }
                         }, 100);
                         return true;
@@ -609,13 +613,13 @@ public class DragDrop extends AppCompatActivity {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     gestureDetector.onTouchEvent(event);
-                    return myTouch(v, event, cards[finalI]);
+                    return myTouch(v, event, card);
                 }
             });
         }
         View.OnClickListener hintButton = new View.OnClickListener() {
             public void onClick(View v) {
-                cards[0].getImageView().setColorFilter(Color.argb(50, 0, 0, 0));
+//                cards[0].getImageView().setColorFilter(Color.argb(50, 0, 0, 0));
             }
         };
     }
@@ -656,4 +660,5 @@ public class DragDrop extends AppCompatActivity {
         }
         return res;
     }
+
 }

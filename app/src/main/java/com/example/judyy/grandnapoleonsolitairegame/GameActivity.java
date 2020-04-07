@@ -51,7 +51,7 @@ public class GameActivity extends AppCompatActivity {
     private static int RED = Color.argb(123,255,0,0);
     private static int CELLAR_RED = Color.argb(255,255,0,0);
     private static int numMCTrialsPerBoard = 50;
-    private static int mcDEPTH = 35;
+    private static int mcDEPTH = 20;
     //variables for stats
     public static int totalPoints = 0;
     public static int totalMoves = 0;
@@ -77,9 +77,6 @@ public class GameActivity extends AppCompatActivity {
         //Display card to table
 
         boolean gameIsWinnable = false;
-//        long t = System.currentTimeMillis();
-
-//        while (!gameIsWinnable && System.currentTimeMillis() - t < 1000) {
         while (!gameIsWinnable) {
             generateCardSetup(type, cards);
 
@@ -107,33 +104,34 @@ public class GameActivity extends AppCompatActivity {
      * @return true if a game is winnable from the current state
      */
     private boolean mcSimulation(Stack[] gameStacks, Card[] gameCards, int direction){
-                ArrayList<Pair<Card, Stack>> availableMoves = null;
-                Random r = new Random();
-                DragDrop.setDirection(direction);
-                int i=0;
+        ArrayList<Pair<Card, Stack>> availableMoves = null;
+        Random r = new Random();
+        DragDrop.setDirection(direction);
+        int i=0;
 //                ArrayList<String> history = new ArrayList<String>();
-                while (true){
-                    if (i > mcDEPTH){
+        while (true){
+            if (i > mcDEPTH){
 //                        printMoveHistory(history);
-                        return true;
-                    }
-                    i++;
-                    availableMoves = getMoves(gameCards, gameStacks);
-                    if (availableMoves.size() == 0 ){
-                        return (DragDrop.isWin(gameStacks));
-                    }
-                    Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(availableMoves.size()));
-                    int currentStackID = aMove.first.getCurrentStackID();
+                return true;
+            }
+            i++;
+            availableMoves = getMoves(gameCards, gameStacks);
+            int numMoves = availableMoves.size();
+            if (numMoves == 0 ){
+                return (DragDrop.isWin(gameStacks));
+            }
+            Pair<Card, Stack> aMove = availableMoves.get(r.nextInt(numMoves));
+            int currentStackID = aMove.first.getCurrentStackID();
 //                    history.add("From: " + gameStacks[currentStackID].getLastCard().toString() + "To " + aMove.second.toString());
-                    while(gameStacks[currentStackID].getCurrentCards().size() != 0){
+            while(gameStacks[currentStackID].getCurrentCards().size() != 0){
 //                        System.out.println("stuff happens?");
-                        DragDrop.updateCardOnStacks(
-                                gameStacks[currentStackID]
-                                ,gameStacks[currentStackID].getLastCard()
-                                ,gameStacks[aMove.second.getStackID()]);
+                DragDrop.updateCardOnStacks(
+                        gameStacks[currentStackID]
+                        ,gameStacks[currentStackID].getLastCard()
+                        ,gameStacks[aMove.second.getStackID()]);
 
-                    }
-                }
+            }
+        }
     }
 
     /**
@@ -582,7 +580,7 @@ public class GameActivity extends AppCompatActivity {
         totalPoints -= 5;
         totalMoves += 1;
         updateGameStats();
-        DragDrop.clearCardColours(cards);
+        DragDrop.clearCardColours();
         //call method to acquire list of moves
         ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
         GameLayout gameLayout = findViewById(R.id.zoom_linear_layout);
