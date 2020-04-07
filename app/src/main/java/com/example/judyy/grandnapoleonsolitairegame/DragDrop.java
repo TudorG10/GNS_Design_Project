@@ -51,8 +51,7 @@ public class DragDrop extends AppCompatActivity {
     public static Context c;
     private static GameActivity g;
 
-    public void main(Card[] c, Stack[] s){
-//        cards = c;
+    public void main(Stack[] s){
         stacks = s;
     }
 
@@ -62,12 +61,10 @@ public class DragDrop extends AppCompatActivity {
      * care of the Drag and Drop with the game rules
      *
      * @param context
-     * @param c       The array of cards created in GameActivity
      * @param s       The array of stacks created in GameActivity
      */
-    public void main(Context context, Card[] c, Stack[] s, Recorder r, HintSolver hint, GameActivity game) {
+    public void main(Context context, Stack[] s, Recorder r, HintSolver hint, GameActivity game) {
         // Assignment for variables used in Drag and Drop
-//        cards = c;
         stacks = s;
         recorder = r;
         solver = hint;

@@ -393,7 +393,7 @@ public class GameActivity extends AppCompatActivity {
                 stacks[i + 1].addCardToStack(cards[i]);
             }
         }
-        new DragDrop().main(cards, stacks);
+        new DragDrop().main(stacks);
     }
 
     /**
@@ -525,7 +525,7 @@ public class GameActivity extends AppCompatActivity {
             int tempID = cards[i].getCurrentStackID();
             cards[i].setXYPositions(stacks[tempID].getLeftSideLocation(), stacks[tempID].getTopSideLocation());
         }
-        new DragDrop().main(context, cards, stacks, recorder, solver, this);
+        new DragDrop().main(context, stacks, recorder, solver, this);
 
     }
 
