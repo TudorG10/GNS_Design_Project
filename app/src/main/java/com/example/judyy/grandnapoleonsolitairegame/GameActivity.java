@@ -55,6 +55,8 @@ public class GameActivity extends AppCompatActivity {
     //variables for stats
     public static int totalPoints = 0;
     public static int totalMoves = 0;
+    public static int totalHintsUsed = 0;
+    public static int totalUndosUsed = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,8 @@ public class GameActivity extends AppCompatActivity {
         //Initialize Hint Solver
         solver = new HintSolver(this);
 
+        //Reset statistics
+        resetStats();
         //Display card to table
 
         boolean gameIsWinnable = false;
@@ -552,6 +556,7 @@ public class GameActivity extends AppCompatActivity {
         quitPopUp.setPositiveButton("Yes", new android.content.DialogInterface.OnClickListener() {
             @Override
             public void onClick(android.content.DialogInterface dialog, int which) {
+                resetStats();
                 startActivity(new Intent(context, MainActivity.class));
             }
         });
@@ -567,19 +572,22 @@ public class GameActivity extends AppCompatActivity {
     }
 
     /**
-     * method to update the statistics during the game
+     * Method to reset the stats we track during game after quitting a game
      */
-    public void updateGameStats(){
-        TextView points = (TextView)findViewById(R.id.currentPoints);
-        points.setText(GameActivity.totalPoints + " points!");
-        TextView moves = (TextView)findViewById(R.id.currentMoves);
-        moves.setText(GameActivity.totalMoves + " moves!");
+    private void resetStats() {
+        totalPoints = 0;
+        totalMoves = 0;
+        totalUndosUsed = 0;
+        totalHintsUsed = 0;
     }
 
+    /**
+     * Method that triggers when the hint button is clicked to generate a hint
+     * @param v
+     */
     public void onClickGetHint(View v){
-        totalPoints -= 5;
         totalMoves += 1;
-        updateGameStats();
+        totalHintsUsed += 1;
         DragDrop.clearCardColours();
         //call method to acquire list of moves
         ArrayList<Pair<Card, Stack>> availableMoves = getMoves(cards,stacks);
@@ -606,9 +614,8 @@ public class GameActivity extends AppCompatActivity {
 
     //undo button
     public void undoMove(View v){
-        totalPoints -= 10;
         totalMoves += 1;
-        updateGameStats();
+        totalUndosUsed += 1;
         recorder.undoOneStep();
     }
     //zoom button

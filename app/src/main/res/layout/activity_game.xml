@@ -1044,34 +1044,6 @@
                 app:layout_constraintLeft_toLeftOf="@id/stack52"
                 app:layout_constraintTop_toTopOf="@id/stack52" />
 
-            <TextView
-                android:id="@+id/currentMoves"
-                android:layout_width="90dp"
-                android:layout_height="44dp"
-                android:layout_gravity="left"
-                android:text=""
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.179" />
-
-            <TextView
-                android:id="@+id/currentPoints"
-                android:layout_width="90dp"
-                android:layout_height="49dp"
-                android:layout_gravity="left"
-                android:text=""
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/currentMoves"
-                app:layout_constraintVertical_bias="0.0" />
-
         </android.support.constraint.ConstraintLayout>
 
     </com.example.judyy.grandnapoleonsolitairegame.GameLayout>

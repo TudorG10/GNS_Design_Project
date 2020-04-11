@@ -229,7 +229,9 @@ public class DragDrop extends AppCompatActivity {
                     // In the base stacks, set offset to below
                     // THESE ARE THE SOLUTIONS STACKS
                     } else if (whichStack < 24) {
+                        //trust this code is legit
                         GameActivity.totalPoints += 10;
+                        //end of adding points
                         xToSet = stackToDrop.getLeftSideLocation();
                         yToSet = stackToDrop.getTopSideLocation() + ySpaceStack;
                     } else if (whichStack < 44) {
@@ -255,8 +257,7 @@ public class DragDrop extends AppCompatActivity {
                     cardImage.setY(card.getYPosition());
                 }
             }
-            //update stats display
-            g.updateGameStats();
+
             // Record
             if (!recorded) recorder.recordStep(card, previousX, previousY, previousStack, previousCanMove);
 
@@ -268,7 +269,8 @@ public class DragDrop extends AppCompatActivity {
             cardImage.setX(xToSet);
             cardImage.setY(yToSet);
         }
-        if (isWin(this.stacks)){
+        if (true){
+//        if (isWin(this.stacks)){
             //TODO add napoleon win pop up
 //            Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
 //            mWinSnackbar.show();
