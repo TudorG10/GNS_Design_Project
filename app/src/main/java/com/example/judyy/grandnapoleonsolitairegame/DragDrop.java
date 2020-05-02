@@ -226,8 +226,10 @@ public class DragDrop extends AppCompatActivity {
                     // In the base stacks, set offset to below
                     // THESE ARE THE SOLUTIONS STACKS
                     } else if (whichStack < 24) {
-                        //trust this code is legit
-                        GameActivity.totalPoints += 10;
+                        //each move unto solution stacks is +10
+                        for(Card aCard : currentStack.getCurrentCards()){
+                            GameActivity.totalPoints += 10;
+                        }
                         //end of adding points
                         xToSet = stackToDrop.getLeftSideLocation();
                         yToSet = stackToDrop.getTopSideLocation() + ySpaceStack;
@@ -266,15 +268,9 @@ public class DragDrop extends AppCompatActivity {
             cardImage.setX(xToSet);
             cardImage.setY(yToSet);
         }
-        if (true){
-//        if (isWin(this.stacks)){
-            //TODO add napoleon win pop up
-//            Snackbar mWinSnackbar = Snackbar.make(cardImage, R.string.Win_Dialog, Snackbar.LENGTH_INDEFINITE);
-//            mWinSnackbar.show();
-
+        if (isWin(this.stacks)){
+            //call function in GameActivity to change screens
             g.win();
-
-
         }
     }
 
