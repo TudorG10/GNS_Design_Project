@@ -316,6 +316,8 @@ public class DragDrop extends AppCompatActivity {
                 aCard.getImageView().clearColorFilter();
             }
         }
+        //this is cellar
+        stacks[47].getImageView().clearColorFilter();
     }
 
 

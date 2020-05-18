@@ -59,7 +59,7 @@ public class VictoryScreen extends AppCompatActivity {
                 (statsValues[0] + 1) + "\n" +
                         statsValues[1] + "\n" +
                         (actualPoints > statsValues[2] ? actualPoints : statsValues[2]) + "\n" +
-                        (GameActivity.totalMoves < statsValues[3] ? GameActivity.totalMoves : statsValues[3]) + "\n" +
+                        (GameActivity.totalMoves < statsValues[3] && statsValues[3] != 0  ? GameActivity.totalMoves : statsValues[3]) + "\n" +
                         (GameActivity.totalMoves > statsValues[4] ? GameActivity.totalMoves : statsValues[4]) + "\n"
                 ;
 
